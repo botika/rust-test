@@ -16,10 +16,10 @@ use std::usize;
 ///
 /// Every step is documented
 pub fn rain(hours: usize, it: &[usize]) -> Vec<f64> {
-    _rain(hours, (hours * it.len()) as f64, it)
+    _rain(hours, (hours * it.len()) as f64, it, false)
 }
 
-fn _rain(hours: usize, liters: f64, it: &[usize]) -> Vec<f64> {
+fn _rain(hours: usize, liters: f64, it: &[usize], left: bool) -> Vec<f64> {
     let size = it.len();
 
     // End
@@ -77,9 +77,12 @@ fn _rain(hours: usize, liters: f64, it: &[usize]) -> Vec<f64> {
         let r_total: f64 = total_vec[l_num + 1..].iter().map(|x| *x as f64).sum();
 
         // Difference between real
-        let diff = (liters - (l_liters + r_liters)) / 2.0;
-        l_liters += diff;
-        r_liters += diff;
+        let diff = liters - (l_liters + r_liters);
+        if left {
+            l_liters += diff;
+        } else {
+            r_liters += diff;
+        }
 
         // Move surplus
         if l_liters > l_total {
@@ -95,14 +98,14 @@ fn _rain(hours: usize, liters: f64, it: &[usize]) -> Vec<f64> {
         let mut result = Vec::with_capacity(it.len());
 
         // Distribute left litters
-        result.extend(_rain(hours, l_liters, &it[..l_num]));
+        result.extend(_rain(hours, l_liters, &it[..l_num], false));
 
         // Recursion is necessary since you have to mark the position of the local maximum.
         // Local max height uncovered by water
         result.push(0.0);
 
         // Distribute right litters
-        result.extend(_rain(hours, r_liters, &it[l_num + 1..]));
+        result.extend(_rain(hours, r_liters, &it[l_num + 1..], true));
 
         result
     }
@@ -193,7 +196,7 @@ mod test {
     #[test]
     fn another() {
         let res = vec![1, 9, 1, 9];
-        assert_eq!(rain(1, &res), vec![2.0, 0.0, 2.0, 0.0]);
+        assert_eq!(rain(1, &res), vec![1.5, 0.0, 2.5, 0.0]);
 
         let res = vec![9, 9, 1, 9];
         assert_eq!(rain(1, &res), vec![0.0, 0.0, 4.0, 0.0]);
@@ -205,17 +208,8 @@ mod test {
         assert_eq!(rain(1, &res), vec![1.0, 0.0, 4.0, 0.0, 0.0]);
 
         let res = vec![8, 5, 1, 12, 9, 2, 1, 12, 1];
-        let exp = vec![
-            0.4166666666666667,
-            3.4166666666666665,
-            7.416666666666667,
-            0.0,
-            0.0,
-            5.125,
-            6.125,
-            0.0,
-            4.5,
-        ];
+        let part = 1.0 / 6.0;
+        let exp = vec![part, 3.0 + part, 7.0 + part, 0.0, 0.0, 5.5, 6.5, 0.0, 4.5];
         assert_eq!(exp.iter().sum::<f64>(), 3.0 * res.len() as f64);
         assert_eq!(rain(3, &res), exp);
     }
