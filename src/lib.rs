@@ -1,6 +1,3 @@
-use std::f64;
-use std::usize;
-
 /// Rain for `hours`
 ///
 /// Complexity is O(n log n) where n is the number of segments
