@@ -558,7 +558,7 @@ mod test {
         let res = vec![1, 2, 3, 4, 5, 6, 7, 7, 7, 1];
 
         #[rustfmt::skip]
-            let exp = vec![
+        let exp = vec![
             5.0, 4.0, 3.0, 2.0, 1.0, 0.0,
             0.0, 0.0, 0.0,
             5.0
@@ -570,10 +570,26 @@ mod test {
         let res = vec![1, 2, 3, 4, 5, 6, 7, 6, 6, 7, 1];
 
         #[rustfmt::skip]
-            let exp = vec![
+        let exp = vec![
             5.0, 4.0, 3.0, 2.0, 1.0, 0.0,
             0.0, 1.0, 1.0, 0.0,
             5.0
+        ];
+        assert_eq!(exp.iter().sum::<f64>(), (res.len() * 2) as f64);
+        let r = rain(2, &res);
+        assert_eq!(r, exp);
+    }
+
+    #[test]
+    fn failed_left_right2() {
+        let res = vec![1, 2, 3, 8, 8, 5, 6, 8, 8, 8, 8, 1];
+
+        #[rustfmt::skip]
+        let exp = vec![
+            5.0, 4.0, 3.0, 0.0, 0.0,
+            3.0, 2.0,
+            0.0, 0.0, 0.0, 0.0,
+            7.0
         ];
         assert_eq!(exp.iter().sum::<f64>(), (res.len() * 2) as f64);
         let r = rain(2, &res);
